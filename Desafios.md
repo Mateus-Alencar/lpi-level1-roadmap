@@ -12,7 +12,9 @@ Eu quero que você gere um bloco de 5 desafios práticos de Linux para eu treina
    - Tópico 104: Discos, Sistemas de Arquivos Linux e Padrão FHS (Partições, integridade, montagem e permissões).
 4. Sem Respostas de Início: Liste apenas os 5 enunciados/missões e pare de gerar texto. Não inclua os comandos de resposta ou explicações na primeira mensagem. Eu vou tentar resolver e te enviar as minhas respostas para você avaliar depois.
 
-Para começar, gere os primeiros 5 desafios investigativos focados no Exame 101.
+Agora dê foco no tópico 103.8 Edição básica de arquivos com o vi
+
+Para começar, gere os primeiros 2 desafios investigativos focados no Exame 101.
 
 ## Desafio 1 - O servidor que "esqueceu" o disco no boot
 Após uma manutenção, um servidor Debian passou a cair em modo de emergência a cada reinicialização. Ele funcionava bem antes de o administrador substituir o disco de dados por um novo. No journalctl aparece a falha de montagem de /dados, e o /etc/fstab referencia a partição por um identificador do disco antigo. Você precisa:
@@ -22,8 +24,25 @@ Após uma manutenção, um servidor Debian passou a cair em modo de emergência 
 Quais comandos e opções de montagem resolvem isso? Explique também o significado dos dois últimos campos da linha do fstab.  
 
 ## Desafio 2 – Biblioteca fantasma
-#### (Pendente)
-Um binário proprietário instalado em /opt/app/bin/coletor falha ao iniciar com a mensagem error while loading shared libraries: libmetrics.so.3: cannot open shared object file. A biblioteca existe em /opt/app/lib. Você não pode alterar variáveis de ambiente globais em /etc/environment nem reinstalar o software. Descreva como (a) confirmar exatamente quais dependências estão faltando, (b) tornar a biblioteca visível ao carregador dinâmico de forma permanente para todo o sistema, e (c) verificar se ela entrou no cache. Cite o arquivo/diretório de configuração envolvido e como o cache é atualizado. Existe uma alternativa temporária, válida só para uma execução? Qual?
+#### (Resolvido)
+Um binário proprietário instalado em /opt/app/bin/coletor falha ao iniciar com a mensagem `error while loading shared libraries: libmetrics.so.3: cannot open shared object file`. A biblioteca existe em /opt/app/lib. Você não pode alterar variáveis de ambiente globais em /etc/environment nem reinstalar o software. Descreva:  
+
+(a) confirmar exatamente quais dependências estão faltando,   
+(b) tornar a biblioteca visível ao carregador dinâmico de forma permanente para todo o sistema,   
+(c) verificar se ela entrou no cache.  
+
+Cite o arquivo/diretório de configuração envolvido e como o cache é atualizado. Existe uma alternativa temporária, válida só para uma execução? Qual?  
+
+Resposta:  
+a - `ldd /opt/app/lib` esse comando irá listar as dependências compartilhadas dessa biblioteca   
+b - `echo "/opt/app/bin/coletor" > /etc/ld.so.conf.d/coletor.conf
+    ldconfig`  # esse comando irá atualizar o cache com a nova biblioteca informada logo acima  
+c - `ldconfig -p | grep libmetrics`  
+
+Há outro possibilidade para executar testes com essa biblioteca antes de definir ela oficialmente.
+```bash
+LD_LIBRARY_PATH=/opt/app/lib /opt/app/bin/coletor
+```
 
 ## Desafio 3 – Quem mandou esse pacote aqui?
 #### (Pendente)
@@ -47,8 +66,24 @@ Com `nohup`, o processo ignora o SIGHUP, o sinal enviado quando a sessão SSH ca
 nohup sh -c './coleta.sh 2>&1 | tee bruto.log | sort | uniq -c > resumo.txt' > /dev/null 2>&1 &
 ```
 
-
-
 ## Desafio 5 – Cadê o espaço? E as permissões?
 #### (Pendente)
 O df -h mostra /var com 100% de uso, mas du -sh /var soma bem menos do que o disco reporta. Em paralelo, df -i indica uso de inodes normal. Um processo de log foi reiniciado recentemente. Descreva o que provavelmente está acontecendo e como identificar, sem reiniciar o servidor, quais arquivos ainda estão abertos mas já foram removidos, além de como liberar o espaço sem matar o processo. Em seguida, considere que uma pasta compartilhada /srv/projetos deve permitir que membros do grupo dev criem arquivos, que novos arquivos herdem automaticamente o grupo dev, e que ninguém possa remover arquivos de outro usuário. Quais bits de permissão especiais e qual comando você usaria (em notação octal)? Justifique cada bit.
+
+## Desafio 6 - Migração de caminhos  
+Você administra um servidor de backup. O arquivo `/etc/backup/jobs.conf` tem cerca de 3.000 linhas e foi herdado de outro administrador. Os discos de dados foram migrados, e o diretório `/srv/data` agora se chama `/mnt/storage/data`.  
+Há pegadinhas:  
+- Só as linhas 40 a 120 devem ser alteradas. As demais ainda dependem do caminho antigo.  
+- Algumas dessas linhas contêm `/srv/data` dentro de comentários que você quer preservar sem alteração.  
+- Você quer confirmar cada substituição antes que ela aconteça.  
+- O novo caminho contém barras, e você não quer escapar cada uma delas.  
+Tudo isso deve ser feito dentro de uma única sessão do vi, sem sair do editor e sem usar sed externo. Em seguida, você percebe que errou numa das confirmações e precisa desfazer a última alteração.  
+Missão: descreva a sequência de comandos do vi que cumpre todos esses requisitos. Explique também como lidar com a linha de comentário (dica: pense na sintaxe de endereçamento do ex e nas flags do :s). Por fim, diga como desfazer o erro e o que muda entre o comportamento do vi clássico e o do vim.
+
+##### Resposta:
+`:40,120s#/srv/data#/mnt/storage/data#gc`  
+Após executar esse comando no mode de comando do vim, ele irá pedir a autorização para alterar cada linha individualmente, eu só cliquei em y (yes para troca) nas linha que não havia #
+
+40,120s - pega a primeira ocorrência com inicio na linha 40 para alterada pela segunda em todas as linhas até a linha 120
+g - global (leva em consideração todas as ocorrências daquela linha)
+c - solicitação de confirmação antes de realizar a troca
