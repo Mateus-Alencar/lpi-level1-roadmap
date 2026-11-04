@@ -45,8 +45,14 @@ LD_LIBRARY_PATH=/opt/app/lib /opt/app/bin/coletor
 ```
 
 ## Desafio 3 – Quem mandou esse pacote aqui?
-#### (Pendente)
+#### (Resolvida)  
 Em um servidor RHEL-like, o auditor encontrou o arquivo /usr/lib64/libcrypto-legacy.so.1 e quer saber a origem. Além disso, suspeita que o arquivo foi alterado depois da instalação. Sem usar interface gráfica nem buscar manualmente na internet, descreva como você (a) descobre a qual pacote o arquivo pertence, (b) verifica se o arquivo foi modificado em relação ao registrado no banco RPM, e o que cada caractere na saída dessa verificação (tamanho, hash, permissões, etc.) indica, e (c) lista quais scripts de instalação/remoção esse pacote executa. Qual seria o equivalente Debian para (a) e (b)?
+
+Resposta: 
+A) rpm -qf /usr/lib64/libcrypto-legacy.so.1  
+B) rpm -V <nome_pacote>  
+C) rpm -q --scripts <nome_pacote>
+Comandos equivalentes no Debian: dpkg -S /usr/lib64/libcrypto-legacy.so.1, dpkg --verify <nome_pacote>  
 
 ## Desafio 4 – O pipeline que só funciona pela metade
 #### (Resolvida)  
