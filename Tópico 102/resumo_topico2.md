@@ -787,6 +787,23 @@ Configuração: `/etc/zypp/zypp.conf`; repositórios em `/etc/zypp/repos.d/`.
 | **Metadados / user-data** | Dados de configuração entregues à instância no boot |
 
 Modelos de serviço: **IaaS** (infraestrutura), **PaaS** (plataforma), **SaaS** (software).
+## Tipos de serviço em nuvem
+
+| | **IaaS** | **PaaS** | **SaaS** |
+|---|---|---|---|
+| **Nome completo** | Infrastructure as a Service | Platform as a Service | Software as a Service |
+| **Significado** | O provedor entrega infraestrutura virtualizada (VMs, redes, armazenamento) sob demanda | O provedor entrega uma plataforma pronta para desenvolver e executar aplicações | O provedor entrega um aplicativo pronto, usado pela internet |
+| **Quem usa** | Administradores de sistemas e equipes de infraestrutura | Desenvolvedores | Usuários finais |
+| **Nível de controle do cliente** | Alto | Médio | Baixo |
+| **Exemplos** | AWS EC2, Azure Virtual Machines, Google Compute Engine, DigitalOcean | Heroku, Google App Engine, Azure App Service | Gmail, Microsoft 365, Google Workspace, Dropbox |
+
+## Como lembrar
+
+- **IaaS:** você recebe a "máquina vazia" e instala o resto. Ex.: criar uma VM Linux e configurar o Apache.
+- **PaaS:** você só envia o código, e o provedor cuida do sistema e do ambiente.
+- **SaaS:** você só usa o software, sem se preocupar com nada abaixo dele.
+
+Quanto mais você sobe de IaaS para SaaS, **menos controle** e **menos responsabilidade de administração** o cliente tem. Em troca, o provedor assume mais camadas.
 
 ### Imagens
 - Formatos de disco de VM: **qcow2** (QEMU/KVM), **raw**, **VMDK** (VMware), **VDI** (VirtualBox), **VHD/VHDX** (Hyper-V), além de **ISO** para instalação.
